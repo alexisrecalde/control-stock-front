@@ -8,7 +8,7 @@ export const getProducts = async () => {
   const url = `${api}/products?limit=1000`;
   try {
     const response = await axios.get(url, config);
-    console.log(response.data);
+
     return response.data.docs;
   } catch (error) {
     console.error(error);

@@ -7,7 +7,7 @@ import ButtonEliminar from "../../button/ButtonEliminar";
 export default function ItemStock({ data }) {
   const [products, setProducts] = useState([]);
   const [selectRows, setSelectRows] = useState([]);
-  console.log(selectRows);
+ 
 
   const columns = [
     {
