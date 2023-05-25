@@ -9,6 +9,7 @@ import { CircularProgress } from "@mui/material";
 const Stock = () => {
   const { data, isLoading } = useQuery(["product"], getProducts);
   console.log(data);
+  console.log(isLoading);
 
   const deleteProduct = (id) => {
     deleteProduct();
