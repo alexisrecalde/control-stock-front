@@ -8,30 +8,24 @@ export const getProducts = async () => {
   const url = `${api}/products?limit=1000`;
   try {
     const response = await axios.get(url, config);
-    console.log(response.data);
     return response.data.docs;
   } catch (error) {
     console.error(error);
   }
 };
 
-export const deleteProduct = async () => {
+export const deleteProductMultiple = async ({ selectRows }) => {
   const stringifiedQuery = qs.stringify(
     {
       where: {
         id: {
-          contains: [
-            "646f950a145d2fad63ef0652",
-            "646f950a145d2fad63ef0648",
-            "646f9509145d2fad63ef063e",
-          ],
+          contains: selectRows,
         },
       },
     },
     { addQueryPrefix: true }
   );
   try {
-    console.log();
     const req = await fetch(
       `http://localhost:8080/api/products/${stringifiedQuery}`,
       {
