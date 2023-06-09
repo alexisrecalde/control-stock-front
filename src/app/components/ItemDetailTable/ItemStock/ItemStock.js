@@ -11,8 +11,14 @@ import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
 
+
 export default function ItemStock({ data }) {
   const [selectRows, setSelectRows] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogEdit, setOpenDialogEdit] = useState(false);
+  const { register, handleSubmit, reset } = useForm({ defaultValues: {} });
+  const [editingProduct, setEditingProduct] = useState(null);
+
 
   const columns = [
     {
@@ -56,9 +62,54 @@ export default function ItemStock({ data }) {
       //   valueGetter: (params) =>
       //     `${params.row.firstName || ""} ${params.row.lastName || ""}`,
     },
+    {
+      field: "",
+      headerName: "",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          onClick={() => handleEditProduct(params.row)}
+        >
+          Editar
+        </Button>
+      ),
+    },
   ];
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setOpenDialogEdit(true);
+  };
+
+  const handleUpdateProduct = async (data) => {
+    console.log("hols");
+    try {
+      const response = await fetch(`http://localhost:8080/api/products/${editingProduct.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Datos actualizados correctamente:", responseData);
+        // Realizar cualquier otra acción después de actualizar los datos en la base de datos
+      } else {
+        console.error("Error al actualizar los datos:", response.status);
+        // Manejar el error de acuerdo a tus necesidades
+      }
+    } catch (error) {
+      console.error("Error de red:", error);
+      // Manejar el error de red de acuerdo a tus necesidades
+    }
+
+    setOpenDialogEdit(false);
+  };
 
   const openAddProductDialog = () => {
     setOpenDialog(true);
@@ -105,8 +156,7 @@ export default function ItemStock({ data }) {
       });
   };
 
-  const { register, handleSubmit, reset } = useForm({ defaultValues: {} });
-
+  
   const onSubmit = async (data) => {
     try {
       const response = await fetch('http://localhost:8080/api/products', {
@@ -205,6 +255,41 @@ export default function ItemStock({ data }) {
           />
         </div>
       </TableContainer>
+      <Dialog open={openDialogEdit} onClose={() => setOpenDialogEdit(false)}>
+        {editingProduct && (
+          <form
+            className="editProduct"
+            onSubmit={handleSubmit(handleUpdateProduct)}
+          >
+            <input
+              type="text"
+              {...register("name", { required: true })}
+              defaultValue={editingProduct.name}
+              placeholder="Nombre"
+            />
+            <input
+              type="text"
+              {...register("description", { required: true })}
+              defaultValue={editingProduct.description}
+              placeholder="Descripción"
+            />
+            <input
+              type="number"
+              {...register("quantity", { required: true })}
+              defaultValue={editingProduct.quantity}
+              placeholder="Cantidad"
+            />
+            <input
+              type="number"
+              {...register("price", { required: true })}
+              defaultValue={editingProduct.price}
+              placeholder="Precio"
+            />
+            <Button type="submit">Guardar cambios</Button>
+            <Button onClick={() => setOpenDialogEdit(false)}>Cancelar</Button>
+          </form>
+        )}
+      </Dialog>
     </div>
   );
 }
