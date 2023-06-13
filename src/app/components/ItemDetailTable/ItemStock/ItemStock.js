@@ -2,7 +2,6 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
-import { useEffect } from "react";
 import ButtonEliminar from "../../button/ButtonEliminar";
 import { TableContainer } from "@mui/material";
 import { useMutationDeleteProduct } from "@/app/utils/products/hooks/mutation";
@@ -11,14 +10,18 @@ import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
 
-
 export default function ItemStock({ data }) {
   const [selectRows, setSelectRows] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogEdit, setOpenDialogEdit] = useState(false);
   const { register, handleSubmit, reset } = useForm({ defaultValues: {} });
-  const [editingProduct, setEditingProduct] = useState(null);
-
+  const [editFormData, setEditFormData] = useState({
+    id: "",
+    name: "",
+    description: "",
+    quantity: "",
+    price: "",
+  });
 
   const columns = [
     {
@@ -53,7 +56,7 @@ export default function ItemStock({ data }) {
     },
     {
       field: "price",
-      headerName: "Precio",
+      headerName: "Precio de costo",
       width: 200,
       type: "number",
       align: "center",
@@ -61,6 +64,15 @@ export default function ItemStock({ data }) {
 
       //   valueGetter: (params) =>
       //     `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+    },
+
+    {
+      field: "salePrice",
+      headerName: "Precio de Venta",
+      width: 200,
+      type: "number",
+      align: "center",
+      headerAlign: "center",
     },
     {
       field: "",
@@ -78,42 +90,6 @@ export default function ItemStock({ data }) {
       ),
     },
   ];
-
-  const handleEditProduct = (product) => {
-    setEditingProduct(product);
-    setOpenDialogEdit(true);
-  };
-
-  const handleUpdateProduct = async (data) => {
-    console.log("hols");
-    try {
-      const response = await fetch(`http://localhost:8080/api/products/${editingProduct.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Datos actualizados correctamente:", responseData);
-        // Realizar cualquier otra acción después de actualizar los datos en la base de datos
-      } else {
-        console.error("Error al actualizar los datos:", response.status);
-        // Manejar el error de acuerdo a tus necesidades
-      }
-    } catch (error) {
-      console.error("Error de red:", error);
-      // Manejar el error de red de acuerdo a tus necesidades
-    }
-
-    setOpenDialogEdit(false);
-  };
-
-  const openAddProductDialog = () => {
-    setOpenDialog(true);
-  };
 
   const { mutate: mutateDeleteProduct } = useMutationDeleteProduct();
 
@@ -156,17 +132,21 @@ export default function ItemStock({ data }) {
       });
   };
 
-  
+  const openAddProductDialog = () => {
+    setOpenDialog(true);
+  };
+
   const onSubmit = async (data) => {
+    console.log("agregar producto");
     try {
-      const response = await fetch('http://localhost:8080/api/products', {
+      const response = await fetch("http://localhost:8080/api/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-  
+
       if (response.ok) {
         const responseData = await response.json();
         console.log("Datos enviados correctamente:", responseData);
@@ -179,10 +159,52 @@ export default function ItemStock({ data }) {
       console.error("Error de red:", error);
       // Manejar el error de red de acuerdo a tus necesidades
     }
-  
+
     reset(); // Limpia los campos del formulario
   };
-  
+
+  const handleEditProduct = (product) => {
+    setEditFormData({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      quantity: product.quantity,
+      price: product.price,
+      salePrice: product.salePrice,
+    });
+    setOpenDialogEdit(true);
+  };
+
+  const onEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const req = await fetch(
+        `http://localhost:8080/api/products/${editFormData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editFormData),
+        }
+      );
+      if (req.ok) {
+        const data = await req.json();
+        console.log("Producto actualizado:", data);
+        setOpenDialogEdit(false);
+      } else {
+        console.error("Error al actualizar el producto:", req.status);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleEditFormChange = (e) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;
+    setEditFormData({ ...editFormData, [fieldName]: fieldValue });
+  };
 
   return (
     <div style={{ paddingBottom: "100px" }}>
@@ -214,37 +236,64 @@ export default function ItemStock({ data }) {
           />
           <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
             <form className="addProduct" onSubmit={handleSubmit(onSubmit)}>
-              <input
-                type="text"
-                {...register("id", { required: true })}
-                placeholder="ID"
-              />
-              <input
-                type="text"
-                {...register("name", { required: true })}
-                placeholder="Nombre"
-              />
-              <input
-                type="text"
-                {...register("description", { required: true })}
-                placeholder="Descripción"
-              />
-              <input
+              <div>
+                <label htmlFor="name" className="input-label">Nombre</label>
+                <input
+                  type="text"
+                  {...register("name", { required: true })}
+                  placeholder="Nombre"
+                />
+              </div>
+              <hr className="divider" />
+
+              <div>
+                <label htmlFor="name" className="input-label">Descripción</label>
+                <input
+                  type="text"
+                  {...register("description", { required: false })}
+                  placeholder="Descripción"
+                />
+              </div>
+
+              <hr className="divider" />
+
+              <div>
+                <label htmlFor="name" className="input-label">Cantidad</label>
+                <input
                 type="number"
                 {...register("quantity", { required: true })}
                 placeholder="Cantidad"
               />
-              <input
+              </div>
+
+              <hr className="divider" />
+
+              <div>
+                <label htmlFor="name" className="input-label">Precio de Costo</label>
+                <input
                 type="number"
                 {...register("price", { required: true })}
                 placeholder="Precio"
               />
-              <Button type="submit" >
-                Agregar Producto
-              </Button>
-              <Button onClick={() => setOpenDialog(false)}>Cancelar</Button> 
+              </div>
+
+              <hr className="divider" />
+
+              <div>
+                <label htmlFor="name" className="input-label">Precio de Venta</label>
+                <input
+                type="number"
+                {...register("salePrice", { required: true })}
+                placeholder="Precio"
+              />
+              </div>
+              
+              <Button type="submit">Agregar Producto</Button>
+
+              <hr className="divider" />
+
+              <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
             </form>
-            
           </Dialog>
           <ButtonEliminar
             disabled={selectRows.length > 0 ? false : true}
@@ -255,40 +304,68 @@ export default function ItemStock({ data }) {
           />
         </div>
       </TableContainer>
+
       <Dialog open={openDialogEdit} onClose={() => setOpenDialogEdit(false)}>
-        {editingProduct && (
-          <form
-            className="editProduct"
-            onSubmit={handleSubmit(handleUpdateProduct)}
-          >
+        <form className="addProduct" onSubmit={onEditSubmit}>
+          <div>
+            <label htmlFor="name" className="input-label">Nombre</label>
             <input
               type="text"
-              {...register("name", { required: true })}
-              defaultValue={editingProduct.name}
+              name="name"
+              value={editFormData.name}
+              onChange={handleEditFormChange}
               placeholder="Nombre"
             />
+          </div>
+          <hr className="divider" />
+          <div>
+            <label htmlFor="description" className="input-label">Descripción</label>
             <input
               type="text"
-              {...register("description", { required: true })}
-              defaultValue={editingProduct.description}
+              name="description"
+              value={editFormData.description}
+              onChange={handleEditFormChange}
               placeholder="Descripción"
             />
+          </div>
+          <hr className="divider" />
+          <div>
+            <label htmlFor="quantity" className="input-label">Cantidad</label>
             <input
               type="number"
-              {...register("quantity", { required: true })}
-              defaultValue={editingProduct.quantity}
+              name="quantity"
+              value={editFormData.quantity}
+              onChange={handleEditFormChange}
               placeholder="Cantidad"
             />
+          </div>
+          <hr className="divider" />
+          <div>
+            <label htmlFor="price" className="input-label">Precio de Costo</label>
             <input
               type="number"
-              {...register("price", { required: true })}
-              defaultValue={editingProduct.price}
+              name="price"
+              value={editFormData.price}
+              onChange={handleEditFormChange}
               placeholder="Precio"
             />
-            <Button type="submit">Guardar cambios</Button>
-            <Button onClick={() => setOpenDialogEdit(false)}>Cancelar</Button>
-          </form>
-        )}
+          </div>
+          <hr className="divider" />
+          <div>
+            <label htmlFor="salePrice" className="input-label">Precio de Venta</label>
+            <input
+              type="number"
+              name="salePrice"
+              value={editFormData.salePrice}
+              onChange={handleEditFormChange}
+              placeholder="Precio"
+            />
+          </div>
+          <hr className="divider" />
+          <Button type="submit">Guardar Cambios</Button>
+          <hr className="divider" />
+          <Button onClick={() => setOpenDialogEdit(false)}>Cancelar</Button>
+        </form>
       </Dialog>
     </div>
   );
