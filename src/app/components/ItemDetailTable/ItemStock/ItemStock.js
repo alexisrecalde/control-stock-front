@@ -2,13 +2,13 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
-import ButtonEliminar from "../../button/ButtonEliminar";
 import { TableContainer } from "@mui/material";
 import { useMutationDeleteProduct } from "@/app/utils/products/hooks/mutation";
 import Swal from "sweetalert2";
 import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
 import Button from "@mui/material/Button";
+import Buttons from "../../button/Buttons";
 
 export default function ItemStock({ data }) {
   const [selectRows, setSelectRows] = useState([]);
@@ -230,7 +230,7 @@ export default function ItemStock({ data }) {
         <div
           style={{ display: "flex", justifyContent: "end", margin: "20px 0" }}
         >
-          <ButtonEliminar
+          <Buttons
             tittle="Agregar"
             onClickAction={openAddProductDialog}
           />
@@ -287,6 +287,8 @@ export default function ItemStock({ data }) {
                 placeholder="Precio"
               />
               </div>
+
+              <hr className="divider" />
               
               <Button type="submit">Agregar Producto</Button>
 
@@ -295,7 +297,7 @@ export default function ItemStock({ data }) {
               <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
             </form>
           </Dialog>
-          <ButtonEliminar
+          <Buttons
             disabled={selectRows.length > 0 ? false : true}
             ids={selectRows}
             onClickAction={deleteProduct}

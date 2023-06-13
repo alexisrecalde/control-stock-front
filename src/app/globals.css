@@ -28,8 +28,8 @@ body {
 
 .addProduct{
   display: grid;
-  height: 300 px;
-  width: 300 px;
+  height: auto;
+  width: auto;
   padding: 20 px;
 }
 
