@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getProducts } from "../../queries/products/products.queries";
+import "./charge.css";
 
 const Charge = () => {
   const [productList, setProductList] = useState([]);
@@ -9,6 +10,7 @@ const Charge = () => {
   const [totalSellingPrice, setTotalSellingPrice] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
@@ -69,15 +71,25 @@ const Charge = () => {
 
     const subtotal = quantity * parseFloat(sellingPrice);
     setTotalSellingPrice(totalSellingPrice + subtotal);
+
+    const cartItem = {
+      product: selectedProduct,
+      quantity: quantity,
+    };
+
+    setCartItems([...cartItems, cartItem]);
+
     setSelectedProduct(null);
     setSellingPrice("");
     setSellingQuantity("");
+    setSearchQuery(""); // Limpiar el campo de búsqueda
+    setSearchResults([]); // Limpiar los resultados de búsqueda
+    searchInputRef.current.focus(); // Enfocar el campo de búsqueda nuevamente
   };
 
   return (
-    <div>
-      <h2>Venta de productos</h2>
-      <form onSubmit={handleSearchSubmit}>
+    <div className="charge">
+      <form onSubmit={handleSearchSubmit} className="search">
         <input
           type="text"
           placeholder="Buscar producto por nombre o ID"
@@ -88,8 +100,8 @@ const Charge = () => {
         <button type="submit">Buscar</button>
       </form>
 
-      {searchResults.length > 0 ? (
-        <div>
+      {searchResults.length > 0 && !selectedProduct && totalSellingPrice <= 0 ? (
+        <div className="results">
           <h3>Resultados de la búsqueda:</h3>
           <ul>
             {searchResults.map((product) => (
@@ -105,8 +117,8 @@ const Charge = () => {
       ) : null}
 
       {selectedProduct && (
-        <div>
-          <h3>Producto seleccionado:</h3>
+        <div className="results">
+          <h3>Producto seleccionado</h3>
           <p>Nombre: {selectedProduct.name}</p>
           <p>ID: {selectedProduct.id}</p>
           <p>Precio de venta: ${selectedProduct.salePrice}</p>
@@ -120,9 +132,15 @@ const Charge = () => {
         </div>
       )}
 
-      {totalSellingPrice > 0 && (
-        <div>
+      {cartItems.length > 0 && (
+        <div className="results">
           <h3>Carrito de venta:</h3>
+          {cartItems.map((cartItem, index) => (
+            <div key={index}>
+              <p>Producto: {cartItem.product.name}</p>
+              <p>Cantidad: {cartItem.quantity}</p>
+            </div>
+          ))}
           <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
         </div>
       )}
