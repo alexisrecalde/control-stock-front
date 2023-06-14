@@ -12,6 +12,7 @@ const Charge = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const searchInputRef = useRef(null);
+  const quantityRef = useRef(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -53,6 +54,9 @@ const Charge = () => {
     setSelectedProduct(product);
     setSellingPrice(product.salePrice);
     setSellingQuantity("");
+    setTimeout(() => {
+        quantityRef.current.focus();
+      }, 0);
   };
 
   const handleSellingQuantityChange = (e) => {
@@ -100,15 +104,12 @@ const Charge = () => {
         <button type="submit">Buscar</button>
       </form>
 
-      {searchResults.length > 0 && !selectedProduct && totalSellingPrice <= 0 ? (
+      {searchResults.length > 0 ? (
         <div className="results">
           <h3>Resultados de la búsqueda:</h3>
           <ul>
             {searchResults.map((product) => (
-              <li
-                key={product.id}
-                onClick={() => handleProductSelect(product)}
-              >
+              <li key={product.id} onClick={() => handleProductSelect(product)}>
                 {product.name} - ID: {product.id}
               </li>
             ))}
@@ -127,6 +128,7 @@ const Charge = () => {
             value={sellingQuantity}
             onChange={handleSellingQuantityChange}
             placeholder="Cantidad"
+            ref={quantityRef}
           />
           <button onClick={handleAddToCart}>Agregar al carrito</button>
         </div>
@@ -142,6 +144,7 @@ const Charge = () => {
             </div>
           ))}
           <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
+          <button>Cobrar</button>
         </div>
       )}
     </div>
