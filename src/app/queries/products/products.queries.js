@@ -41,3 +41,5 @@ export const deleteProductMultiple = async ({ selectRows }) => {
     console.log(error);
   }
 };
+
+

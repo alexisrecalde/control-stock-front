@@ -1,0 +1,70 @@
+.charge{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.search{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.search > input{
+    margin: 10px;
+    padding: 5px;
+    width: 400px;
+    border-radius: 5px;
+}
+
+.search > button{
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgb(46, 46, 150);
+    color: white;
+}
+
+.results{
+    margin: 15px;
+    padding: 15px;
+    border-top: 1px solid black ;
+    border-bottom: 1px solid black ;
+    display: flex;
+    flex-direction: column;
+}
+
+.results > h3 {
+    font-size: large;
+    align-self: center;
+    margin: 15px;
+}
+
+.results > p {
+    padding: 5px;
+}
+
+.results > input {
+    padding: 5px;
+}
+
+.results > ul > li{
+    cursor: pointer;
+    padding: 5px;
+} 
+
+.results > button{
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgb(46, 46, 150);
+    color: white;
+}
+
+
+
+
+
+
+
