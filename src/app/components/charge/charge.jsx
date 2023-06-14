@@ -31,15 +31,19 @@ const Charge = () => {
     searchInputRef.current.focus();
   }, []);
 
+  // useEffect(() => {
+
+  // }, [searchResults, cartItems, searchQuery, totalSellingPrice, selectedProduct]);
+
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const handleSearchSubmit = (e) => {
+
     e.preventDefault();
     if (searchQuery.trim() === "") {
       setSearchResults([]);
-      return;
     }
 
     const results = productList.filter(
@@ -48,7 +52,9 @@ const Charge = () => {
         product.id.toString().includes(searchQuery)
     );
     setSearchResults(results);
+    console.log(searchResults);
   };
+  console.log(searchResults);
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -90,6 +96,8 @@ const Charge = () => {
     setSearchResults([]); // Limpiar los resultados de búsqueda
     searchInputRef.current.focus(); // Enfocar el campo de búsqueda nuevamente
   };
+  console.log(searchResults.length);
+  console.log(totalSellingPrice);
 
   return (
     <div className="charge">
