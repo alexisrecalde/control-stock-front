@@ -134,7 +134,7 @@ const Charge = () => {
         </div>
       )}
 
-      {cartItems.length > 0 && (
+      {cartItems.length > 0 &&  (
         <div className="results">
           <h3>Carrito de venta:</h3>
           {cartItems.map((cartItem, index) => (
