@@ -13,6 +13,8 @@ const Charge = () => {
   const [cartItems, setCartItems] = useState([]);
   const searchInputRef = useRef(null);
   const quantityRef = useRef(null);
+  const [isCobrarPressed, setIsCobrarPressed] = useState(false);
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -96,8 +98,60 @@ const Charge = () => {
     setSearchResults([]); // Limpiar los resultados de búsqueda
     searchInputRef.current.focus(); // Enfocar el campo de búsqueda nuevamente
   };
+  console.log(cartItems);
   console.log(searchResults.length);
   console.log(totalSellingPrice);
+
+  const handleCobrar = async () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+  
+    // Actualizar los productos en la base de datos
+    try {
+      await Promise.all(
+        cartItems.map(async ({ product, quantity }) => {
+          console.log(product);
+          const stock = parseFloat(product.quantity);
+          const quantityValue = parseFloat(quantity);
+  
+          if (isNaN(stock) || isNaN(quantityValue)) {
+            throw new Error("El stock o la cantidad no son valores numéricos");
+          }
+  
+          const updatedStock = stock - quantityValue; // Calcula el stock actualizado
+  
+          const updatedProduct = { ...product, quantity: updatedStock };
+          console.log(updatedProduct.stock); // Muestra el stock actualizado
+  
+          const response = await fetch(
+            `http://localhost:8080/api/products/${updatedProduct.id}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatedProduct),
+            }
+          );
+  
+          if (!response.ok) {
+            throw new Error("Error al actualizar el producto");
+          }
+        })
+      );
+  
+      // Luego, restablecer el estado y limpiar el carrito de venta
+      setIsCobrarPressed(true);
+      setCartItems([]);
+      setTotalSellingPrice(0);
+    } catch (error) {
+      console.error("Error al actualizar los productos:", error);
+    }
+  };
+  
+  
+  
 
   return (
     <div className="charge">
@@ -152,7 +206,7 @@ const Charge = () => {
             </div>
           ))}
           <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
-          <button>Cobrar</button>
+          <button onClick={handleCobrar}>Cobrar</button>
         </div>
       )}
     </div>
