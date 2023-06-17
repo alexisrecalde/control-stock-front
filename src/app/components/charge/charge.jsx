@@ -197,8 +197,12 @@ const Charge = () => {
           <h3>Carrito de venta:</h3>
           {cartItems.map((cartItem, index) => (
             <div key={index} className="cart">
-              <p>Producto: {cartItem.product.name}</p>
-              <p>Cantidad: {cartItem.quantity}</p>
+              <hr className="divider" />
+              <p> {cartItem.product.name}</p>
+              <p> {cartItem.product.description}</p>
+              <p> {cartItem.quantity}</p>
+
+              <hr className="divider" />
               <button onClick={() => handleRemoveFromCart(index)}>
                 Eliminar
               </button>
