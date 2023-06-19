@@ -393,7 +393,7 @@ export default function ItemStock({ data }) {
             />
           </div>
           <hr className="divider" />
-          <Button type="submit">Guardar Cambios</Button>
+          <Button type="submit">Guardar Cambios m</Button>
           <hr className="divider" />
           <Button onClick={() => setOpenDialogEdit(false)}>Cancelar</Button>
         </form>
