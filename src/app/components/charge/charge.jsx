@@ -12,6 +12,9 @@ const Charge = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const searchInputRef = useRef(null);
+  const quantityRef = useRef(null);
+  const [isCobrarPressed, setIsCobrarPressed] = useState(false);
+  const [selected, setSelected] = useState()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,16 +33,11 @@ const Charge = () => {
     searchInputRef.current.focus();
   }, []);
 
-  // useEffect(() => {
-
-  // }, [searchResults, cartItems, searchQuery, totalSellingPrice, selectedProduct]);
-
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const handleSearchSubmit = (e) => {
-
     e.preventDefault();
     if (searchQuery.trim() === "") {
       setSearchResults([]);
@@ -51,14 +49,17 @@ const Charge = () => {
         product.id.toString().includes(searchQuery)
     );
     setSearchResults(results);
-    console.log(searchResults);
+    setSelected(true)
   };
-  console.log(searchResults);
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
     setSellingPrice(product.salePrice);
     setSellingQuantity("");
+    setTimeout(() => {
+      quantityRef.current.focus();
+    }, 0);
+    setSelected(false)
   };
 
   const handleSellingQuantityChange = (e) => {
@@ -88,12 +89,62 @@ const Charge = () => {
     setSelectedProduct(null);
     setSellingPrice("");
     setSellingQuantity("");
-    setSearchQuery(""); // Limpiar el campo de búsqueda
-    setSearchResults([]); // Limpiar los resultados de búsqueda
-    searchInputRef.current.focus(); // Enfocar el campo de búsqueda nuevamente
+    setSearchQuery("");
+    setSearchResults([]);
+    searchInputRef.current.focus();
   };
-  console.log(searchResults.length);
-  console.log(totalSellingPrice);
+
+  const handleRemoveFromCart = (index) => {
+    const updatedCartItems = [...cartItems];
+    const removedItem = updatedCartItems.splice(index, 1)[0];
+    const subtotal = removedItem.quantity * parseFloat(removedItem.product.salePrice);
+    setTotalSellingPrice(totalSellingPrice - subtotal);
+    setCartItems(updatedCartItems);
+  };
+
+  const handleCobrar = async () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+
+    // Actualizar los productos en la base de datos
+    try {
+      await Promise.all(
+        cartItems.map(async ({ product, quantity }) => {
+          const stock = parseFloat(product.quantity);
+          const quantityValue = parseFloat(quantity);
+
+          if (isNaN(stock) || isNaN(quantityValue)) {
+            throw new Error("El stock o la cantidad no son valores numéricos");
+          }
+
+          const updatedStock = stock - quantityValue;
+          const updatedProduct = { ...product, quantity: updatedStock };
+
+          const response = await fetch(
+            `http://localhost:8080/api/products/${updatedProduct.id}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatedProduct),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Error al actualizar el producto");
+          }
+        })
+      );
+
+      setIsCobrarPressed(true);
+      setCartItems([]);
+      setTotalSellingPrice(0);
+    } catch (error) {
+      console.error("Error al actualizar los productos:", error);
+    }
+  };
 
   return (
     <div className="charge">
@@ -108,33 +159,34 @@ const Charge = () => {
         <button type="submit">Buscar</button>
       </form>
 
-      {searchResults.length > 0 ? (
+      {searchResults.length > 0 && selected &&(
         <div className="results">
-          <h3>Resultados de la búsqueda:</h3>
+          <h3>Resultados de la búsqueda</h3>
           <ul>
             {searchResults.map((product) => (
               <li
                 key={product.id}
                 onClick={() => handleProductSelect(product)}
               >
-                {product.name} - ID: {product.id}
+                {product.name} - {product.description} - $ {product.salePrice}
               </li>
             ))}
           </ul>
         </div>
-      ) : null}
+      )}
 
       {selectedProduct && (
         <div className="results">
           <h3>Producto seleccionado</h3>
           <p>Nombre: {selectedProduct.name}</p>
-          <p>ID: {selectedProduct.id}</p>
+          <p>Descripción: {selectedProduct.description}</p>
           <p>Precio de venta: ${selectedProduct.salePrice}</p>
           <input
             type="number"
             value={sellingQuantity}
             onChange={handleSellingQuantityChange}
             placeholder="Cantidad"
+            ref={quantityRef}
           />
           <button onClick={handleAddToCart}>Agregar al carrito</button>
         </div>
@@ -144,12 +196,20 @@ const Charge = () => {
         <div className="results">
           <h3>Carrito de venta:</h3>
           {cartItems.map((cartItem, index) => (
-            <div key={index}>
-              <p>Producto: {cartItem.product.name}</p>
-              <p>Cantidad: {cartItem.quantity}</p>
+            <div key={index} className="cart">
+              <hr className="divider" />
+              <p> {cartItem.product.name}</p>
+              <p> {cartItem.product.description}</p>
+              <p> {cartItem.quantity}</p>
+
+              <hr className="divider" />
+              <button onClick={() => handleRemoveFromCart(index)}>
+                Eliminar
+              </button>
             </div>
           ))}
           <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
+          <button onClick={handleCobrar}>Cobrar</button>
         </div>
       )}
     </div>
