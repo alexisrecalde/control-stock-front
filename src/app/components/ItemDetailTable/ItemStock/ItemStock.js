@@ -40,6 +40,13 @@ export default function ItemStock({ data }) {
       headerAlign: "center",
     },
     {
+      field: "supplier",
+      headerName: "Proveedor",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "description",
       headerName: "Descripcion",
       width: 200,
@@ -167,6 +174,7 @@ export default function ItemStock({ data }) {
     setEditFormData({
       id: product.id,
       name: product.name,
+      supplier: product.supplier,
       description: product.description,
       quantity: product.quantity,
       price: product.price,
@@ -247,6 +255,16 @@ export default function ItemStock({ data }) {
               <hr className="divider" />
 
               <div>
+                <label htmlFor="name" className="input-label">Proveedor</label>
+                <input
+                  type="text"
+                  {...register("supplier", { required: true })}
+                  placeholder="Proveedor"
+                />
+              </div>
+              <hr className="divider" />
+
+              <div>
                 <label htmlFor="name" className="input-label">Descripción</label>
                 <input
                   type="text"
@@ -321,6 +339,17 @@ export default function ItemStock({ data }) {
           </div>
           <hr className="divider" />
           <div>
+            <label htmlFor="name" className="input-label">Proveedor</label>
+            <input
+              type="text"
+              name="supplier"
+              value={editFormData.supplier}
+              onChange={handleEditFormChange}
+              placeholder="Proveedor"
+            />
+          </div>
+          <hr className="divider" />
+          <div>
             <label htmlFor="description" className="input-label">Descripción</label>
             <input
               type="text"
@@ -364,7 +393,7 @@ export default function ItemStock({ data }) {
             />
           </div>
           <hr className="divider" />
-          <Button type="submit">Guardar Cambios</Button>
+          <Button type="submit">Guardar Cambios m</Button>
           <hr className="divider" />
           <Button onClick={() => setOpenDialogEdit(false)}>Cancelar</Button>
         </form>

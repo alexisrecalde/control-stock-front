@@ -1,7 +1,14 @@
+"use client";
 import React from "react";
+import { Titulo, Container } from "../../../styles/global/global.style";
 
-const Ventas = () => {
-  return <div>index</div>;
+const Venta = () => {
+  return (
+    <Container>
+      <Titulo>Ventas</Titulo>
+      
+    </Container>
+  );
 };
 
-export default Ventas;
+export default Venta;
