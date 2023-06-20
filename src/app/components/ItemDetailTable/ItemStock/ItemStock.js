@@ -3,7 +3,11 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
 import { TableContainer } from "@mui/material";
-import { useMutationDeleteProduct } from "@/app/utils/products/hooks/mutation";
+import {
+  useMutationDeleteProduct,
+  useMutationAddProduct,
+  useMutationEditProduct,
+} from "@/app/utils/products/hooks/mutation";
 import Swal from "sweetalert2";
 import Dialog from "@mui/material/Dialog";
 import { useForm } from "react-hook-form";
@@ -99,6 +103,8 @@ export default function ItemStock({ data }) {
   ];
 
   const { mutate: mutateDeleteProduct } = useMutationDeleteProduct();
+  const { mutate: mutateAddProduct } = useMutationAddProduct(data);
+  const { mutate: mutateEditProduct } = useMutationEditProduct(editFormData);
 
   const deleteProduct = () => {
     const swalWithBootstrapButtons = Swal.mixin({
@@ -143,33 +149,6 @@ export default function ItemStock({ data }) {
     setOpenDialog(true);
   };
 
-  const onSubmit = async (data) => {
-    console.log("agregar producto");
-    try {
-      const response = await fetch("http://localhost:8080/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Datos enviados correctamente:", responseData);
-        // Realizar cualquier otra acción después de subir los datos a la base de datos
-      } else {
-        console.error("Error al enviar los datos:", response.status);
-        // Manejar el error de acuerdo a tus necesidades
-      }
-    } catch (error) {
-      console.error("Error de red:", error);
-      // Manejar el error de red de acuerdo a tus necesidades
-    }
-
-    reset(); // Limpia los campos del formulario
-  };
-
   const handleEditProduct = (product) => {
     setEditFormData({
       id: product.id,
@@ -183,35 +162,14 @@ export default function ItemStock({ data }) {
     setOpenDialogEdit(true);
   };
 
-  const onEditSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const req = await fetch(
-        `http://localhost:8080/api/products/${editFormData.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editFormData),
-        }
-      );
-      if (req.ok) {
-        const data = await req.json();
-        console.log("Producto actualizado:", data);
-        setOpenDialogEdit(false);
-      } else {
-        console.error("Error al actualizar el producto:", req.status);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const handleEditFormChange = (e) => {
     const fieldName = e.target.name;
     const fieldValue = e.target.value;
     setEditFormData({ ...editFormData, [fieldName]: fieldValue });
+  };
+
+  const closeDialog = () => {
+    setOpenDialogEdit(false);
   };
 
   return (
@@ -238,14 +196,19 @@ export default function ItemStock({ data }) {
         <div
           style={{ display: "flex", justifyContent: "end", margin: "20px 0" }}
         >
-          <Buttons
-            tittle="Agregar"
-            onClickAction={openAddProductDialog}
-          />
+          <Buttons tittle="Agregar" onClickAction={openAddProductDialog} />
           <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-            <form className="addProduct" onSubmit={handleSubmit(onSubmit)}>
+            <form
+              className="addProduct"
+              onSubmit={handleSubmit((data, event) => {
+                mutateAddProduct(data);
+                event.target.reset();
+              })}
+            >
               <div>
-                <label htmlFor="name" className="input-label">Nombre</label>
+                <label htmlFor="name" className="input-label">
+                  Nombre
+                </label>
                 <input
                   type="text"
                   {...register("name", { required: true })}
@@ -255,7 +218,9 @@ export default function ItemStock({ data }) {
               <hr className="divider" />
 
               <div>
-                <label htmlFor="name" className="input-label">Proveedor</label>
+                <label htmlFor="name" className="input-label">
+                  Proveedor
+                </label>
                 <input
                   type="text"
                   {...register("supplier", { required: true })}
@@ -265,7 +230,9 @@ export default function ItemStock({ data }) {
               <hr className="divider" />
 
               <div>
-                <label htmlFor="name" className="input-label">Descripción</label>
+                <label htmlFor="name" className="input-label">
+                  Descripción
+                </label>
                 <input
                   type="text"
                   {...register("description", { required: false })}
@@ -276,38 +243,44 @@ export default function ItemStock({ data }) {
               <hr className="divider" />
 
               <div>
-                <label htmlFor="name" className="input-label">Cantidad</label>
+                <label htmlFor="name" className="input-label">
+                  Cantidad
+                </label>
                 <input
-                type="number"
-                {...register("quantity", { required: true })}
-                placeholder="Cantidad"
-              />
+                  type="number"
+                  {...register("quantity", { required: true })}
+                  placeholder="Cantidad"
+                />
               </div>
 
               <hr className="divider" />
 
               <div>
-                <label htmlFor="name" className="input-label">Precio de Costo</label>
+                <label htmlFor="name" className="input-label">
+                  Precio de Costo
+                </label>
                 <input
-                type="number"
-                {...register("price", { required: true })}
-                placeholder="Precio"
-              />
+                  type="number"
+                  {...register("price", { required: true })}
+                  placeholder="Precio"
+                />
               </div>
 
               <hr className="divider" />
 
               <div>
-                <label htmlFor="name" className="input-label">Precio de Venta</label>
+                <label htmlFor="name" className="input-label">
+                  Precio de Venta
+                </label>
                 <input
-                type="number"
-                {...register("salePrice", { required: true })}
-                placeholder="Precio"
-              />
+                  type="number"
+                  {...register("salePrice", { required: true })}
+                  placeholder="Precio"
+                />
               </div>
 
               <hr className="divider" />
-              
+
               <Button type="submit">Agregar Producto</Button>
 
               <hr className="divider" />
@@ -326,9 +299,18 @@ export default function ItemStock({ data }) {
       </TableContainer>
 
       <Dialog open={openDialogEdit} onClose={() => setOpenDialogEdit(false)}>
-        <form className="addProduct" onSubmit={onEditSubmit}>
+        <form
+          className="addProduct"
+          onSubmit={(event) => {
+            event.preventDefault(); // Previene el comportamiento de envío predeterminado del formulario
+            mutateEditProduct(editFormData); // Llama a la función mutateEditProduct
+            closeDialog(); // Llama a la función edir
+          }}
+        >
           <div>
-            <label htmlFor="name" className="input-label">Nombre</label>
+            <label htmlFor="name" className="input-label">
+              Nombre
+            </label>
             <input
               type="text"
               name="name"
@@ -339,7 +321,9 @@ export default function ItemStock({ data }) {
           </div>
           <hr className="divider" />
           <div>
-            <label htmlFor="name" className="input-label">Proveedor</label>
+            <label htmlFor="name" className="input-label">
+              Proveedor
+            </label>
             <input
               type="text"
               name="supplier"
@@ -350,7 +334,9 @@ export default function ItemStock({ data }) {
           </div>
           <hr className="divider" />
           <div>
-            <label htmlFor="description" className="input-label">Descripción</label>
+            <label htmlFor="description" className="input-label">
+              Descripción
+            </label>
             <input
               type="text"
               name="description"
@@ -361,7 +347,9 @@ export default function ItemStock({ data }) {
           </div>
           <hr className="divider" />
           <div>
-            <label htmlFor="quantity" className="input-label">Cantidad</label>
+            <label htmlFor="quantity" className="input-label">
+              Cantidad
+            </label>
             <input
               type="number"
               name="quantity"
@@ -372,7 +360,9 @@ export default function ItemStock({ data }) {
           </div>
           <hr className="divider" />
           <div>
-            <label htmlFor="price" className="input-label">Precio de Costo</label>
+            <label htmlFor="price" className="input-label">
+              Precio de Costo
+            </label>
             <input
               type="number"
               name="price"
@@ -383,7 +373,9 @@ export default function ItemStock({ data }) {
           </div>
           <hr className="divider" />
           <div>
-            <label htmlFor="salePrice" className="input-label">Precio de Venta</label>
+            <label htmlFor="salePrice" className="input-label">
+              Precio de Venta
+            </label>
             <input
               type="number"
               name="salePrice"
@@ -393,7 +385,7 @@ export default function ItemStock({ data }) {
             />
           </div>
           <hr className="divider" />
-          <Button type="submit">Guardar Cambios m</Button>
+          <Button type="submit">Guardar Cambios</Button>
           <hr className="divider" />
           <Button onClick={() => setOpenDialogEdit(false)}>Cancelar</Button>
         </form>
