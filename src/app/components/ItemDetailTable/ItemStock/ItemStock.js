@@ -166,6 +166,7 @@ export default function ItemStock({ data }) {
     const fieldName = e.target.name;
     const fieldValue = e.target.value;
     setEditFormData({ ...editFormData, [fieldName]: fieldValue });
+    console.log("alexis gay");
   };
 
   const closeDialog = () => {
