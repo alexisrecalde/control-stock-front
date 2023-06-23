@@ -10,7 +10,7 @@ export const Titulo = styled.h1`
 export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  height: 100vh
+  height: 200vh
 `;
 
 

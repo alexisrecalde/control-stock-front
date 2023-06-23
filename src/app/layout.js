@@ -2,7 +2,7 @@
 import Nav from "./components/nav/Nav";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
 

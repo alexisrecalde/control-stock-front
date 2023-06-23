@@ -14,7 +14,7 @@ const Charge = () => {
   const searchInputRef = useRef(null);
   const quantityRef = useRef(null);
   const [isCobrarPressed, setIsCobrarPressed] = useState(false);
-  const [selected, setSelected] = useState()
+  const [selected, setSelected] = useState();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -49,7 +49,7 @@ const Charge = () => {
         product.id.toString().includes(searchQuery)
     );
     setSearchResults(results);
-    setSelected(true)
+    setSelected(true);
   };
 
   const handleProductSelect = (product) => {
@@ -59,7 +59,7 @@ const Charge = () => {
     setTimeout(() => {
       quantityRef.current.focus();
     }, 0);
-    setSelected(false)
+    setSelected(false);
   };
 
   const handleSellingQuantityChange = (e) => {
@@ -97,7 +97,8 @@ const Charge = () => {
   const handleRemoveFromCart = (index) => {
     const updatedCartItems = [...cartItems];
     const removedItem = updatedCartItems.splice(index, 1)[0];
-    const subtotal = removedItem.quantity * parseFloat(removedItem.product.salePrice);
+    const subtotal =
+      removedItem.quantity * parseFloat(removedItem.product.salePrice);
     setTotalSellingPrice(totalSellingPrice - subtotal);
     setCartItems(updatedCartItems);
   };
@@ -120,7 +121,7 @@ const Charge = () => {
 
           const updatedStock = stock - quantityValue;
           const updatedProduct = { ...product, quantity: updatedStock };
-
+          console.log(updatedProduct);
           const response = await fetch(
             `http://localhost:8080/api/products/${updatedProduct.id}`,
             {
@@ -159,29 +160,61 @@ const Charge = () => {
         <button type="submit">Buscar</button>
       </form>
 
-      {searchResults.length > 0 && selected &&(
+      {searchResults.length > 0 && selected && (
         <div className="results">
           <h3>Resultados de la búsqueda</h3>
           <ul>
-            {searchResults.map((product) => (
-              <li
-                key={product.id}
-                onClick={() => handleProductSelect(product)}
-              >
-                {product.name} - {product.description} - $ {product.salePrice}
-              </li>
-            ))}
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Proveedor</th>
+                  <th>Descripción</th>
+                  <th>Precio de venta</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchResults.map((product) => (
+                  <tr
+                    key={product.id}
+                    onClick={() => handleProductSelect(product)}
+                    className="resultsSearch"
+                  >
+                    <td>{product.name}</td>
+                    <td>{product.supplier}</td>
+                    <td>{product.description}</td>
+                    <td>${product.salePrice}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </ul>
         </div>
       )}
 
       {selectedProduct && (
-        <div className="results">
+        <div className="selected">
           <h3>Producto seleccionado</h3>
-          <p>Nombre: {selectedProduct.name}</p>
-          <p>Descripción: {selectedProduct.description}</p>
-          <p>Precio de venta: ${selectedProduct.salePrice}</p>
+          <tablet>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Proveedor</th>
+                <th>Descripción</th>
+                <th>Precio de venta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{selectedProduct.name}</td>
+                <td>{selectedProduct.supplier}</td>
+                <td>{selectedProduct.description}</td>
+                <td>${selectedProduct.salePrice}</td>
+              </tr>
+            </tbody>
+          </tablet>
           <input
+            className="inputQuantity"
             type="number"
             value={sellingQuantity}
             onChange={handleSellingQuantityChange}
@@ -192,26 +225,53 @@ const Charge = () => {
         </div>
       )}
 
-      {cartItems.length > 0 && (
-        <div className="results">
-          <h3>Carrito de venta:</h3>
-          {cartItems.map((cartItem, index) => (
-            <div key={index} className="cart">
-              <hr className="divider" />
-              <p> {cartItem.product.name}</p>
-              <p> {cartItem.product.description}</p>
-              <p> {cartItem.quantity}</p>
+{cartItems.length > 0 && (
+  <div className="selected">
+    <h3>Carrito de venta:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Proveedor</th>
+          <th>Descripción</th>
+          <th>Cantidad</th>
+          <th>Precio de venta</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {cartItems.map((cartItem, index) => (
+          
+          <React.Fragment key={index}>
+            <tr>
+              <td>{cartItem.product.name}</td>
+              <td>{cartItem.product.supplier}</td>
+              <td>{cartItem.product.description}</td>
+              <td>{cartItem.product.description}</td>
+              <td>${cartItem.product.salePrice}</td>
+              <td>
+                <button
+                  className="delete"
+                  onClick={() => handleRemoveFromCart(index)}
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="5">
+                <hr style={{ borderTop: "1px solid black" }} />
+              </td>
+            </tr>
+          </React.Fragment>
+        ))}
+      </tbody>
+    </table>
+    <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
+    <button onClick={handleCobrar}>Cobrar</button>
+  </div>
+)}
 
-              <hr className="divider" />
-              <button onClick={() => handleRemoveFromCart(index)}>
-                Eliminar
-              </button>
-            </div>
-          ))}
-          <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
-          <button onClick={handleCobrar}>Cobrar</button>
-        </div>
-      )}
     </div>
   );
 };
