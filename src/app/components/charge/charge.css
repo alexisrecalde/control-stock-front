@@ -68,7 +68,7 @@
 
   .results h3 {
     font-size: 20px;
-    margin-bottom: 10px;
+    margin: 10px;
   }
 
   .results ul {
@@ -78,7 +78,6 @@
   }
 
   .results table {
-    border-collapse: collapse;
     width: 100%;
     margin-bottom: 10px;
   }
@@ -91,7 +90,6 @@
   }
 
   .results th {
-    background-color: #f2f2f2;
     font-weight: bold;
     width: 25%;
   }
@@ -100,7 +98,7 @@
     cursor: pointer;
   }
 
-  .results tr:hover {
+  .results > tbody > tr:hover {
     background-color: #928c8c;
   }
 

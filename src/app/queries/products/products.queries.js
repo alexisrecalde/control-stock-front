@@ -16,6 +16,16 @@ export const getProducts = async () => {
   }
 };
 
+export const getSoldProducts = async () => {
+  const url = `${api}/ventas?limit=1000`;
+  try {
+    const response = await axios.get(url, config);
+    return response.data.docs;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const deleteProductMultiple = async ({ selectRows }) => {
   const stringifiedQuery = qs.stringify(
     {
