@@ -1,10 +1,21 @@
-import { deleteProductMultiple, onSubmit, onEditSubmit } from "@/app/queries/products/products.queries";
+import { deleteProductMultiple, onSubmit, onEditSubmit, deleteProductMultipleSale} from "@/app/queries/products/products.queries";
 
 export const DeleteProductStock = async ({ selectRows }) => {
   console.log("action products");
   try {
     console.log("action try");
     await deleteProductMultiple({ selectRows });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const DeleteProductSale = async ({ selectRows }) => {
+  console.log("action products");
+  try {
+    console.log("action try");
+    await deleteProductMultipleSale({ selectRows });
   } catch (e) {
     console.log(e);
     throw e;

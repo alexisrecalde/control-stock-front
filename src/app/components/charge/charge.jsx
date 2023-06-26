@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getProducts } from "../../queries/products/products.queries";
 import "./charge.css";
+import moment from 'moment-timezone';
 
 const Charge = () => {
   const [productList, setProductList] = useState([]);
@@ -132,10 +133,30 @@ const Charge = () => {
               body: JSON.stringify(updatedProduct),
             }
           );
-
           if (!response.ok) {
             throw new Error("Error al actualizar el producto");
           }
+
+          // Agregar los productos vendidos a la base de datos de ventas
+          const soldProducts = {...product, quantity: quantityValue, date: moment().tz('America/Argentina/Buenos_Aires').format(),}
+
+          const salesResponse = await fetch("http://localhost:8080/api/ventas", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(soldProducts),
+          });
+
+          if (salesResponse.ok) {
+            const responseData = await salesResponse.json();
+            console.log("Datos enviados correctamente:", responseData);
+            // Realizar cualquier otra acción después de subir los datos a la base de datos
+          } else {
+            console.error("Error al enviar los datos:", salesResponse.status);
+            // Manejar el error de acuerdo a tus necesidades
+          }
+          
         })
       );
 
@@ -170,7 +191,8 @@ const Charge = () => {
                   <th>Producto</th>
                   <th>Proveedor</th>
                   <th>Descripción</th>
-                  <th>Precio de venta</th>
+                  <th>Stock</th>
+                  <th>P. de venta</th>
                 </tr>
               </thead>
               <tbody>
@@ -183,6 +205,7 @@ const Charge = () => {
                     <td>{product.name}</td>
                     <td>{product.supplier}</td>
                     <td>{product.description}</td>
+                    <td>{product.quantity}</td>
                     <td>${product.salePrice}</td>
                   </tr>
                 ))}
@@ -195,7 +218,7 @@ const Charge = () => {
       {selectedProduct && (
         <div className="selected">
           <h3>Producto seleccionado</h3>
-          <tablet>
+          <table>
             <thead>
               <tr>
                 <th>Producto</th>
@@ -212,7 +235,7 @@ const Charge = () => {
                 <td>${selectedProduct.salePrice}</td>
               </tr>
             </tbody>
-          </tablet>
+          </table>
           <input
             className="inputQuantity"
             type="number"
@@ -225,53 +248,51 @@ const Charge = () => {
         </div>
       )}
 
-{cartItems.length > 0 && (
-  <div className="selected">
-    <h3>Carrito de venta:</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Proveedor</th>
-          <th>Descripción</th>
-          <th>Cantidad</th>
-          <th>Precio de venta</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {cartItems.map((cartItem, index) => (
-          
-          <React.Fragment key={index}>
-            <tr>
-              <td>{cartItem.product.name}</td>
-              <td>{cartItem.product.supplier}</td>
-              <td>{cartItem.product.description}</td>
-              <td>{cartItem.product.description}</td>
-              <td>${cartItem.product.salePrice}</td>
-              <td>
-                <button
-                  className="delete"
-                  onClick={() => handleRemoveFromCart(index)}
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="5">
-                <hr style={{ borderTop: "1px solid black" }} />
-              </td>
-            </tr>
-          </React.Fragment>
-        ))}
-      </tbody>
-    </table>
-    <p>Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
-    <button onClick={handleCobrar}>Cobrar</button>
-  </div>
-)}
-
+      {cartItems.length > 0 && (
+        <div className="selected">
+          <h3>Carrito de venta</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Proveedor</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio de venta</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cartItems.map((cartItem, index) => (
+                <React.Fragment key={index}>
+                  <tr>
+                    <td>{cartItem.product.name}</td>
+                    <td>{cartItem.product.supplier}</td>
+                    <td>{cartItem.product.description}</td>
+                    <td>{cartItem.quantity}</td>
+                    <td>${cartItem.product.salePrice}</td>
+                    <td>
+                      <button
+                        className="delete"
+                        onClick={() => handleRemoveFromCart(index)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan="5">
+                      <hr style={{ borderTop: "1px solid black" }} />
+                    </td>
+                  </tr>
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+          <p className="totalPrice">Precio total de venta: ${totalSellingPrice.toFixed(2)}</p>
+          <button onClick={handleCobrar}>Cobrar</button>
+        </div>
+      )}
     </div>
   );
 };

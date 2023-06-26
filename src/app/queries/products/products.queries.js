@@ -54,6 +54,34 @@ export const deleteProductMultiple = async ({ selectRows }) => {
   }
 };
 
+export const deleteProductMultipleSale = async ({ selectRows }) => {
+  const stringifiedQuery = qs.stringify(
+    {
+      where: {
+        id: {
+          contains: selectRows,
+        },
+      },
+    },
+    { addQueryPrefix: true }
+  );
+  try {
+    const req = await fetch(
+      `http://localhost:8080/api/ventas/${stringifiedQuery}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await req.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
 export const onSubmit = async (data) => {
   

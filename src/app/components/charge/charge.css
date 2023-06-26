@@ -55,15 +55,17 @@
 }  */
 
 .results {
-    margin-top: 20px;
-    width: 70%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(238, 238, 238);
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  margin-top: 20px;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(238, 238, 238);
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  padding: 20px;
+
   }
 
   .results h3 {
@@ -80,6 +82,7 @@
   .results table {
     width: 100%;
     margin-bottom: 10px;
+    table-layout: fixed;
   }
 
   .results th,
@@ -194,6 +197,11 @@
     background-color: #928c8c;
     padding: 5px;
     border-radius: 5px;
+}
+
+.totalPrice{
+  font-size: 20px;
+  padding: 10px;
 }
 
 
