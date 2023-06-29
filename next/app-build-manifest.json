@@ -1,0 +1,53 @@
+{
+  "pages": {
+    "/page": [
+      "static/chunks/webpack-5b1f51082935faa8.js",
+      "static/chunks/2443530c-5b84dbaae49fa833.js",
+      "static/chunks/139-a64a22572733dfe5.js",
+      "static/chunks/main-app-e802cfa3a1bcc67e.js",
+      "static/chunks/app/page-c38abd8932026f30.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-5b1f51082935faa8.js",
+      "static/chunks/2443530c-5b84dbaae49fa833.js",
+      "static/chunks/139-a64a22572733dfe5.js",
+      "static/chunks/main-app-e802cfa3a1bcc67e.js",
+      "static/chunks/824-f23ade0d6db18d26.js",
+      "static/chunks/46-575379b1d7133f3e.js",
+      "static/css/034a40d7b1d361c0.css",
+      "static/chunks/app/layout-ecc259f4cad2a555.js"
+    ],
+    "/cobrar/page": [
+      "static/chunks/webpack-5b1f51082935faa8.js",
+      "static/chunks/2443530c-5b84dbaae49fa833.js",
+      "static/chunks/139-a64a22572733dfe5.js",
+      "static/chunks/main-app-e802cfa3a1bcc67e.js",
+      "static/chunks/9628c96d-7335521dee160c23.js",
+      "static/chunks/a3d8d90f-79ab4183cdb2d2d8.js",
+      "static/chunks/974-d185dca1339ad2c1.js",
+      "static/css/bbb9875c54945f9f.css",
+      "static/chunks/app/cobrar/page-0685a7fc2c8de616.js"
+    ],
+    "/ventas/page": [
+      "static/chunks/webpack-5b1f51082935faa8.js",
+      "static/chunks/2443530c-5b84dbaae49fa833.js",
+      "static/chunks/139-a64a22572733dfe5.js",
+      "static/chunks/main-app-e802cfa3a1bcc67e.js",
+      "static/chunks/974-d185dca1339ad2c1.js",
+      "static/chunks/824-f23ade0d6db18d26.js",
+      "static/chunks/781-f7d81c7f50c385a5.js",
+      "static/chunks/app/ventas/page-b5ddf8d43aa97ee5.js"
+    ],
+    "/stock/page": [
+      "static/chunks/webpack-5b1f51082935faa8.js",
+      "static/chunks/2443530c-5b84dbaae49fa833.js",
+      "static/chunks/139-a64a22572733dfe5.js",
+      "static/chunks/main-app-e802cfa3a1bcc67e.js",
+      "static/chunks/974-d185dca1339ad2c1.js",
+      "static/chunks/824-f23ade0d6db18d26.js",
+      "static/chunks/781-f7d81c7f50c385a5.js",
+      "static/chunks/654-87ea984335c140c5.js",
+      "static/chunks/app/stock/page-b558580e055cab24.js"
+    ]
+  }
+}
